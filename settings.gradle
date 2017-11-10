@@ -1,1 +1,4 @@
-include ':app', ':rxfeedback'
+include ':app', ':rxfeedback', ':SharedSequenceAnnotations', ':SharedSequenceProcessor', ':sharedsequence'
+project(':SharedSequenceAnnotations').projectDir = new File('libraries/SharedSequence.kt/SharedSequenceAnnotations')
+project(':SharedSequenceProcessor').projectDir = new File('libraries/SharedSequence.kt/SharedSequenceProcessor')
+project(':sharedsequence').projectDir = new File('libraries/SharedSequence.kt/SharedSequence')
