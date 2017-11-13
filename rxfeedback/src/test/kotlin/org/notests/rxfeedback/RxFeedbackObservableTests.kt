@@ -95,11 +95,8 @@ class RxFeedbackObservableTests {
         assertEquals(listOf(
                 next(200, "initial"),
                 next(200, "initial_a"),
-                next(200, "initial_a_a"),
-                next(200, "initial_a_a_a"),
-                next(200, "initial_a_a_a_b"),
-                next(200, "initial_a_a_a_b_b"),
-                next(200, "initial_a_a_a_b_b_b")
+                next(200, "initial_a_b"),
+                next(200, "initial_a_b_c")
         ), res.events())
     }
 
