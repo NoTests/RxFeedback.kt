@@ -1,4 +1,4 @@
-package org.notests.rxfeedback;
+package org.notests.rxtestutils;
 
 import org.junit.Test;
 
