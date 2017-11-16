@@ -7,12 +7,16 @@ jobs:
     environment:
         JVM_OPTS: -Xmx3200m
     steps:
-          - checkout
+          - checkout:
+             post:
+                - git submodule init
+                - git submodule update --init
+                - git submodule sync
           - restore_cache:
               key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "rxfeedback/build.gradle" }}
           - run:
               name: Download Dependencies
-              command: ./gradlew androidDependencies
+              command: ./gradlew androidDependencies --debug --stacktrace
           - save_cache:
               paths:
                 - ~/.gradle
@@ -21,8 +25,8 @@ jobs:
               name: Run Tests
               command: ./gradlew clean testDebugUnitTest
           - store_artifacts:
-              path: app/build/reports
+              path: rxfeedback/build/reports
               destination: reports
           - store_test_results:
-              path: app/build/test-results
+              path: rxfeedback/build/test-results
 
