@@ -1,4 +1,4 @@
-package org.notests.rxfeedbackexample
+package org.notests.rxfeedbackexample.counter
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -11,6 +11,7 @@ import org.notests.rxfeedback.Bindings
 import org.notests.rxfeedback.Observables
 import org.notests.rxfeedback.bind
 import org.notests.rxfeedback.system
+import org.notests.rxfeedbackexample.R
 
 /**
  * Created by Juraj Begovac on 01/12/2017.
@@ -24,11 +25,13 @@ enum class Event {
 
 class Counter : AppCompatActivity() {
 
-    var disposable: Disposable = Disposables.empty()
+    private var disposable: Disposable = Disposables.empty()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_counter)
+
+        supportActionBar?.title = "Counter"
 
         disposable = Observables.system(initialState = 0,
                 reduce = { state, event: Event ->
