@@ -28,12 +28,6 @@ android {
 
 }
 
-repositories {
-    maven {
-        url "https://dl.bintray.com/markotron/maven"
-    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
