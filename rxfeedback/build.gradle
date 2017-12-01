@@ -28,6 +28,12 @@ android {
 
 }
 
+repositories {
+    maven {
+        url "https://dl.bintray.com/markotron/maven"
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -38,6 +44,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     implementation 'io.reactivex.rxjava2:rxjava:2.1.6'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation project(':sharedsequence')
     implementation project(':rxtestutils')
+    implementation 'org.notests:SharedSequence:0.1.4'
 }
