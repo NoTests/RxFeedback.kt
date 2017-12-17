@@ -2,6 +2,8 @@
 <manifest package="org.notests.rxfeedbackexample"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,5 +20,6 @@
         </activity>
         <activity android:name=".counter.Counter" />
         <activity android:name=".play_catch.PlayCatch" />
+        <activity android:name=".github_paginated_search.GithubPaginatedSearchActivity" />
     </application>
 </manifest>

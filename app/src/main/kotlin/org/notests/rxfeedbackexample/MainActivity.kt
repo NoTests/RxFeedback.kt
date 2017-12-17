@@ -13,6 +13,7 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.notests.rxfeedbackexample.MyListAdapter.ViewHolder
 import org.notests.rxfeedbackexample.counter.Counter
+import org.notests.rxfeedbackexample.github_paginated_search.GithubPaginatedSearchActivity
 import org.notests.rxfeedbackexample.play_catch.PlayCatch
 
 
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
                 when (it) {
                     Item.counter -> startActivity(Intent(this@MainActivity, Counter::class.java))
                     Item.playCatch -> startActivity(Intent(this@MainActivity, PlayCatch::class.java))
+                    Item.githubPaginatedSearch -> startActivity(Intent(this@MainActivity, GithubPaginatedSearchActivity::class.java))
                 }
             })
         }
@@ -37,7 +39,9 @@ class MainActivity : AppCompatActivity() {
 }
 
 enum class Item(val displayName: String) {
-    counter("Counter"), playCatch("Play Catch")
+    counter("Counter"),
+    playCatch("Play Catch"),
+    githubPaginatedSearch("Github pagination")
 }
 
 class MyListAdapter(private val items: List<Item>, private val onClick: (Item) -> (Unit)) : RecyclerView.Adapter<ViewHolder>() {
