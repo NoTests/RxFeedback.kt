@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/NoTests/RxFeedback.kt.svg)](https://jitpack.io/#NoTests/RxFeedback.kt)
+[![CircleCI](https://circleci.com/gh/NoTests/RxFeedback.kt.svg?style=shield&circle-token=727b4ab19d1007e8e5e1f3c633a499217a613687)](https://circleci.com/gh/NoTests/RxFeedback.kt) [![](https://jitpack.io/v/NoTests/RxFeedback.kt.svg)](https://jitpack.io/#NoTests/RxFeedback.kt)
 
 #### RxFeedback 
 Kotlin version of [RxFeedback](https://github.com/kzaher/RxFeedback)
