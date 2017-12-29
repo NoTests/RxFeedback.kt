@@ -12,16 +12,16 @@ import org.notests.sharedsequence.empty
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns a value, that value is being passed into `effects` lambda to decide which effects should be performed.
-In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
-
-When `query` returns `nil`, feedback loops doesn't perform any effect.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter areEqual: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query result.
-- returns: Feedback loop performing the effects.
+ *
+ * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
+ *
+ * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param areEqual Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query result.
+ * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> react(
         query: (State) -> Optional<Query>,
@@ -59,15 +59,15 @@ fun <State, Query, Event> react(
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns a value, that value is being passed into `effects` lambda to decide which effects should be performed.
-In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
-
-When `query` returns `nil`, feedback loops doesn't perform any effect.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query result.
-- returns: Feedback loop performing the effects.
+ *
+ * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
+ *
+ * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query result.
+ * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> react(
         query: (State) -> Optional<Query>,
@@ -78,16 +78,16 @@ fun <State, Query, Event> react(
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns a value, that value is being passed into `effects` lambda to decide which effects should be performed.
-In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
-
-When `query` returns `nil`, feedback loops doesn't perform any effect.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter areEqual: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query result.
-- returns: Feedback loop performing the effects.
+ *
+ * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
+ *
+ * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param areEqual Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query result.
+ * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> reactSafe(
         query: (State) -> Optional<Query>,
@@ -106,15 +106,15 @@ fun <State, Query, Event> reactSafe(
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns a value, that value is being passed into `effects` lambda to decide which effects should be performed.
-In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
-
-When `query` returns `nil`, feedback loops doesn't perform any effect.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query result.
-- returns: Feedback loop performing the effects.
+ *
+ * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
+ *
+ * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query result.
+ * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> reactSafe(
         query: (State) -> Optional<Query>,
@@ -132,18 +132,18 @@ fun <State, Query, Event> reactSafe(
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns some set of values, each value is being passed into `effects` lambda to decide which effects should be performed.
-
+ *
+ * When `query` returns some set of values, each value is being passed into `effects` lambda to decide which effects should be performed.
+ *
  * Effects are not interrupted for elements in the new `query` that were present in the `old` query.
  * Effects are cancelled for elements present in `old` query but not in `new` query.
  * In case new elements are present in `new` query (and not in `old` query) they are being passed to the `effects` lambda and resulting effects are being performed.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query element.
-- returns: Feedback loop performing the effects.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query element.
+ * @return Feedback loop performing the effects.
  */
-public fun <State, Query, Event> reactSet(
+fun <State, Query, Event> reactSet(
         query: (State) -> Set<Query>,
         effects: (Query) -> Observable<Event>
 ): (ObservableSchedulerContext<State>) -> Observable<Event> =
@@ -179,18 +179,18 @@ fun <Element, O> Observable<Element>.takeUntilWithCompletedAsync(other: Observab
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
-
-When `query` returns some set of values, each value is being passed into `effects` lambda to decide which effects should be performed.
-
+ *
+ * When `query` returns some set of values, each value is being passed into `effects` lambda to decide which effects should be performed.
+ *
  * Effects are not interrupted for elements in the new `query` that were present in the `old` query.
  * Effects are cancelled for elements present in `old` query but not in `new` query.
  * In case new elements are present in `new` query (and not in `old` query) they are being passed to the `effects` lambda and resulting effects are being performed.
-
-- parameter query: Part of state that controls feedback loop.
-- parameter effects: Chooses which effects to perform for certain query element.
-- returns: Feedback loop performing the effects.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query element.
+ * @return Feedback loop performing the effects.
  */
-public fun <State, Query, Event> reactSetSafe(
+fun <State, Query, Event> reactSetSafe(
         query: (State) -> Set<Query>,
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
@@ -200,7 +200,7 @@ public fun <State, Query, Event> reactSetSafe(
                     Signal.scheduler
             )
             reactSet(query, { effects(it).asObservable() })(observableSchedulerContext)
-                    .asSignal(Signal.empty<Event>())
+                    .asSignal(Signal.empty())
         }
 
 
@@ -212,10 +212,12 @@ fun <Element> Observable<Element>.enqueue(scheduler: Scheduler): Observable<Elem
                 // (smooths out any glitches caused by start-cancel immediatelly)
                 .subscribeOn(scheduler)
 
+
 /**
-Contains subscriptions and events.
-- `subscriptions` map a system state to UI presentation.
-- `events` map events from UI to events of a given system.
+ * Contains subscriptions and events.
+ *
+ * @param subscriptions map a system state to UI presentation.
+ * @param events map events from UI to events of a given system.
  */
 data class Bindings<Event>(val subscriptions: Iterable<Disposable>, val events: Iterable<Observable<Event>>) : Disposable {
 
@@ -238,7 +240,7 @@ data class Bindings<Event>(val subscriptions: Iterable<Disposable>, val events: 
 /**
 Bi-directional binding of a system State to external state machine and events from it.
  */
-public fun <State, Event> bind(bindings: (ObservableSchedulerContext<State>) -> (Bindings<Event>)): (ObservableSchedulerContext<State>) -> Observable<Event> =
+fun <State, Event> bind(bindings: (ObservableSchedulerContext<State>) -> (Bindings<Event>)): (ObservableSchedulerContext<State>) -> Observable<Event> =
         { state: ObservableSchedulerContext<State> ->
             Observable.using({
                 bindings(state)
@@ -260,6 +262,5 @@ fun <State, Event> bindSafe(bindings: (Driver<State>) -> (Bindings<Event>)): (Dr
             }, { it.dispose() })
                     .enqueue(Signal.scheduler)
                     .asSignal(Signal.empty<Event>())
-
         }
 

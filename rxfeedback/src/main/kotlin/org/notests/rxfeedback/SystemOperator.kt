@@ -8,31 +8,31 @@ import org.notests.sharedsequence.Signal
 import org.notests.sharedsequence.asDriver
 import org.notests.sharedsequence.empty
 
-/// Tuple of observable sequence and corresponding scheduler context on which that observable
-/// sequence receives elements.
-public data class ObservableSchedulerContext<Element>(
+/**
+ * Tuple of observable sequence and corresponding scheduler context on which that observable sequence receives elements.
+ */
+data class ObservableSchedulerContext<Element>(
         val source: Observable<Element>,
         val scheduler: Scheduler
 )
 
-final class Observables {
-    companion object {
-    }
+class Observables {
+    companion object
 }
 
 typealias Feedback<State, Event> = (ObservableSchedulerContext<State>) -> Observable<Event>
 typealias SignalFeedback<State, Event> = (Driver<State>) -> Signal<Event>
 
 /**
-System simulation will be started upon subscription and stopped after subscription is disposed.
-
-System state is represented as a `State` parameter.
-Events are represented by `Event` parameter.
-
-- parameter initialState: Initial state of the system.
-- parameter accumulator: Calculates new system state from existing state and a transition event (system integrator, reducer).
-- parameter feedback: Feedback loops that produce events depending on current system state.
-- returns: Current state of the system.
+ * System simulation will be started upon subscription and stopped after subscription is disposed.
+ *
+ * System state is represented as a [State] parameter.
+ * Events are represented by [Event] parameter.
+ *
+ * @param initialState Initial state of the system.
+ * @param reduce Calculates new system state from existing state and a transition event (system integrator, reducer).
+ * @param scheduledFeedback Feedback loops that produce events depending on current system state.
+ * @return Current state of the system.
  */
 fun <State, Event> Observables.Companion.system(
         initialState: State,
@@ -56,17 +56,17 @@ fun <State, Event> Observables.Companion.system(
         }!!
 
 /**
-System simulation will be started upon subscription and stopped after subscription is disposed.
-
-System state is represented as a `State` parameter.
-Events are represented by `Event` parameter.
-
-- parameter initialState: Initial state of the system.
-- parameter accumulator: Calculates new system state from existing state and a transition event (system integrator, reducer).
-- parameter feedback: Feedback loops that produce events depending on current system state.
-- returns: Current state of the system.
+ * System simulation will be started upon subscription and stopped after subscription is disposed.
+ *
+ * System state is represented as a [State] parameter.
+ * Events are represented by [Event] parameter.
+ *
+ * @param initialState Initial state of the system.
+ * @param reduce Calculates new system state from existing state and a transition event (system integrator, reducer).
+ * @param scheduledFeedback Feedback loops that produce events depending on current system state.
+ * @return Current state of the system.
  */
-fun <State, Event> Observables.system(
+fun <State, Event> Observables.Companion.system(
         initialState: State,
         reduce: (State, Event) -> State,
         scheduler: Scheduler,
@@ -75,15 +75,15 @@ fun <State, Event> Observables.system(
         Observables.system(initialState, reduce, scheduler, scheduledFeedback.toList())
 
 /**
-System simulation will be started upon subscription and stopped after subscription is disposed.
-
-System state is represented as a `State` parameter.
-Events are represented by `Event` parameter.
-
-- parameter initialState: Initial state of the system.
-- parameter accumulator: Calculates new system state from existing state and a transition event (system integrator, reducer).
-- parameter feedback: Feedback loops that produce events depending on current system state.
-- returns: Current state of the system.
+ * System simulation will be started upon subscription and stopped after subscription is disposed.
+ *
+ * System state is represented as a [State] parameter.
+ * Events are represented by [Event] parameter.
+ *
+ * @param initialState Initial state of the system.
+ * @param reduce Calculates new system state from existing state and a transition event (system integrator, reducer).
+ * @param feedback Feedback loops that produce events depending on current system state.
+ * @return Current state of the system.
  */
 fun <State, Event> Driver.Companion.system(
         initialState: State,
@@ -98,15 +98,15 @@ fun <State, Event> Driver.Companion.system(
         }).asDriver(Driver.empty())
 
 /**
-System simulation will be started upon subscription and stopped after subscription is disposed.
-
-System state is represented as a `State` parameter.
-Events are represented by `Event` parameter.
-
-- parameter initialState: Initial state of the system.
-- parameter accumulator: Calculates new system state from existing state and a transition event (system integrator, reducer).
-- parameter feedback: Feedback loops that produce events depending on current system state.
-- returns: Current state of the system.
+ * System simulation will be started upon subscription and stopped after subscription is disposed.
+ *
+ * System state is represented as a [State] parameter.
+ * Events are represented by [Event] parameter.
+ *
+ * @param initialState Initial state of the system.
+ * @param reduce Calculates new system state from existing state and a transition event (system integrator, reducer).
+ * @param feedback Feedback loops that produce events depending on current system state.
+ * @return Current state of the system.
  */
 fun <State, Event> Driver.Companion.system(
         initialState: State,
