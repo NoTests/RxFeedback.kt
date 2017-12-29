@@ -47,14 +47,15 @@ The simplest architecture for [RxJava](https://github.com/ReactiveX/RxJava)
 Add it in your root build.gradle at the end of repositories:
 ```
 allprojects {
-		repositories {
+	repositories {
 			...
-			maven { url 'https://jitpack.io' }
-		}
+		maven { url 'https://jitpack.io' }
+		maven { url "https://dl.bintray.com/markotron/maven" } // currently needed because depends on SharedSequence.kt
 	}
+}
 ```
  Add the dependency
 ```
-compile 'com.github.NoTests.RxFeedback.kt:rxfeedback:0.1.0'
+compile 'com.github.NoTests.RxFeedback.kt:rxfeedback:0.1.1'
 ```
 
