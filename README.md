@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/NoTests/RxFeedback.kt.svg)](https://jitpack.io/#NoTests/RxFeedback.kt)
+
 #### RxFeedback 
 Kotlin version of [RxFeedback](https://github.com/kzaher/RxFeedback)
 
