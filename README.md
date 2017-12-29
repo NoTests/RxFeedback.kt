@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/NoTests/RxFeedback.kt.svg)](https://jitpack.io/#NoTests/RxFeedback.kt)
+
 #### RxFeedback 
 Kotlin version of [RxFeedback](https://github.com/kzaher/RxFeedback)
 
@@ -40,4 +42,19 @@ The simplest architecture for [RxJava](https://github.com/ReactiveX/RxJava)
 * Can model circular dependencies
 * Completely separates business logic from effects (Rx).
     * Business logic can be transpiled between platforms (ShiftJS, C++, J2ObjC)
+
+# How to include?
+Add it in your root build.gradle at the end of repositories:
+```
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+ Add the dependency
+```
+compile 'com.github.NoTests.RxFeedback.kt:rxfeedback:0.1.0'
+```
 
