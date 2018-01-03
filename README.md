@@ -56,6 +56,6 @@ allprojects {
 ```
  Add the dependency
 ```
-compile 'com.github.NoTests.RxFeedback.kt:rxfeedback:0.1.1'
+compile 'com.github.NoTests.RxFeedback.kt:rxfeedback:{$latest_version}'
 ```
 
