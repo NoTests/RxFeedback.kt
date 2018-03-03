@@ -15,8 +15,8 @@ android {
     defaultConfig {
         minSdkVersion 18
         targetSdkVersion 26
-        versionCode 1 // increase this for every build
-        versionName "0.1.0"
+        versionCode 2 // increase this for every build
+        versionName "0.1.2"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

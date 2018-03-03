@@ -50,12 +50,11 @@ allprojects {
 	repositories {
 		...
 		maven { url 'https://jitpack.io' }
-		maven { url "https://dl.bintray.com/markotron/maven" } // currently needed because depends on SharedSequence.kt
 	}
 }
 ```
  Add the dependency
 ```
-implementation 'com.github.NoTests:RxFeedback.kt:0.1.1'
+implementation 'com.github.NoTests:RxFeedback.kt:0.1.2'
 ```
 
