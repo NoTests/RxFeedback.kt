@@ -33,7 +33,7 @@ The simplest architecture for [RxJava](https://github.com/ReactiveX/RxJava)
 * Can be applied on any level
     * [Entire system](https://kafka.apache.org/documentation/)
     * application (state is stored inside a database, Firebase, Realm)
-    * activity/fragment (state is stored inside `system` operator)
+    * Activity/Fragment/ViewModel(Android Architecture Component) (state is stored inside `system` operator)
     * inside feedback loop (another `system` operator inside feedback loop)
 * Works awesome with dependency injection
 * Testing
