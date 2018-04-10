@@ -28,12 +28,12 @@ The simplest architecture for [RxJava](https://github.com/ReactiveX/RxJava)
 * Declarative
     * System behavior is first declaratively specified and effects begin after subscribe is called => Compile time proof there are no "unhandled states"
 * Debugging is easier
-    * A lot of logic is just normal pure function that can be debugged using Xcode debugger, or just printing the commands.
+    * A lot of logic is just normal pure function that can be debugged using Android studio debugger, or just printing the commands.
 
 * Can be applied on any level
     * [Entire system](https://kafka.apache.org/documentation/)
-    * application (state is stored inside a database, CoreData, Firebase, Realm)
-    * view controller (state is stored inside `system` operator)
+    * application (state is stored inside a database, Firebase, Realm)
+    * activity/fragment (state is stored inside `system` operator)
     * inside feedback loop (another `system` operator inside feedback loop)
 * Works awesome with dependency injection
 * Testing
