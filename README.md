@@ -43,6 +43,77 @@ The simplest architecture for [RxJava](https://github.com/ReactiveX/RxJava)
 * Completely separates business logic from effects (Rx).
     * Business logic can be transpiled between platforms (ShiftJS, C++, J2ObjC)
 
+# Examples
+
+## Simple UI Feedback loop
+```kotlin
+Observables.system(initialState = 0,
+                reduce = { state, event: Event ->
+                    when (event) {
+                        Event.Increment -> state + 1
+                        Event.Decrement -> state - 1
+                    }
+                },
+                scheduler = AndroidSchedulers.mainThread(),
+                scheduledFeedback = listOf(
+                        bind {
+                            val subscriptions = listOf(
+                                    it.source.map { it.toString() }.subscribe { label.text = it }
+                            )
+                            val events = listOf(
+                                    RxView.clicks(plus).map { Event.Increment },
+                                    RxView.clicks(minus).map { Event.Decrement }
+                            )
+                            return@bind Bindings(subscriptions, events)
+                        }
+		)
+	)
+```
+<img src="https://github.com/JurajBegovac/rxfeedbackcontent/raw/master/Counter.gif" width="320px" />
+
+## Play Catch
+
+Simple automatic feedback loop.
+
+```kotlin
+Observables.system(
+                initialState = State.HumanHasIt,
+                reduce = { state, event: Event ->
+                    when (event) {
+                        Event.ThrowToMachine -> State.MachineHasIt
+                        Event.ThrowToHuman -> State.HumanHasIt
+                    }
+                },
+                scheduler = AndroidSchedulers.mainThread(),
+                scheduledFeedback = listOf(
+                        bindUI,
+                        react<State, Unit, Event>(query = { it.machinePitching},
+				effects = {
+				    Observable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
+					    .map { Event.ThrowToHuman }
+					    }
+			)
+                )
+	)
+```
+<img src="https://github.com/JurajBegovac/rxfeedbackcontent/raw/master/PlayCatch.gif" width="320px" />
+
+## Paging
+```kotlin
+Driver.system(
+                initialState = State.empty,
+                reduce = { state: State, event: Event -> State.reduce(state, event) },
+                feedback = listOf(bindUI,
+                        reactSafe<State, String, Event>(
+                                query = { it.loadNextPage },
+                                effects = {
+                                    repositoryService.getSearchRepositoriesResponse(it)
+                                            .asSignal(onError = Signal.just(Result.Failure(GitHubServiceError.Offline) as SearchRepositoriesResponse))
+                                            .map { Event.Response(it) }
+                                }
+                        )))
+```
+
 # How to include?
 Add it in your root build.gradle at the end of repositories:
 ```
