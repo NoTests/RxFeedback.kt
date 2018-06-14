@@ -1,4 +1,4 @@
-package org.notests.rxfeedbackexample.github_paginated_search
+package org.notests.rxfeedbackexample.github.paginated.search
 
 import org.junit.Assert
 import org.junit.Test
