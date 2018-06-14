@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId "org.notests.rxfeedbackexample"
         minSdkVersion 18
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -29,8 +29,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:' + versions.kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
     implementation 'com.android.support:appcompat-v7:' + versions.support
+    implementation 'com.android.support:design:' + versions.support
     implementation 'com.android.support.constraint:constraint-layout:' + versions.constraint_layout
 
     implementation project(path: ':rxfeedback')

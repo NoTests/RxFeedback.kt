@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".counter.Counter" />
-        <activity android:name=".play_catch.PlayCatch" />
-        <activity android:name=".github_paginated_search.GithubPaginatedSearchActivity" />
+        <activity android:name=".play.catch.PlayCatch" />
+        <activity android:name=".github.paginated.search.GithubPaginatedSearchActivity" />
     </application>
 </manifest>

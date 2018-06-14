@@ -1,7 +1,8 @@
-package org.notests.rxfeedbackexample.play_catch
+package org.notests.rxfeedbackexample.play.catch
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -10,7 +11,6 @@ import io.reactivex.disposables.Disposables
 import kotlinx.android.synthetic.main.activity_play_catch.*
 import org.notests.rxfeedback.*
 import org.notests.rxfeedbackexample.R
-import org.notests.rxfeedbackexample.extensions.isHidden
 import java.util.concurrent.TimeUnit
 
 /**
@@ -56,8 +56,7 @@ class PlayCatch : AppCompatActivity() {
                 effects = {
                     Observable.timer(1, TimeUnit.SECONDS, AndroidSchedulers.mainThread())
                             .map { Event.ThrowToHuman }
-                }
-        )
+                })
 
         disposable = Observables.system(
                 initialState = State.HumanHasIt,
@@ -71,8 +70,7 @@ class PlayCatch : AppCompatActivity() {
                 scheduledFeedback = listOf(
                         bindUI,
                         bindMachine
-                )
-        )
+                ))
                 .subscribe()
     }
 
@@ -103,3 +101,13 @@ val State.machineStateOfMind: String
 
 val State.machinePitching: Optional<Unit>
     get() = if (this == State.MachineHasIt) Optional.Some(Unit) else Optional.None()
+
+var View.isHidden: Boolean
+    set(value) {
+        if (value) {
+            this.visibility = View.GONE
+        } else this.visibility = View.VISIBLE
+    }
+    get() {
+        return !this.isShown
+    }

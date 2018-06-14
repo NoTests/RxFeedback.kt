@@ -20,7 +20,7 @@ import org.notests.rxfeedbackexample.R
 typealias State = Int
 
 enum class Event {
-    increment, decrement
+    Increment, Decrement
 }
 
 class Counter : AppCompatActivity() {
@@ -36,8 +36,8 @@ class Counter : AppCompatActivity() {
         disposable = Observables.system(initialState = 0,
                 reduce = { state, event: Event ->
                     when (event) {
-                        Event.increment -> state + 1
-                        Event.decrement -> state - 1
+                        Event.Increment -> state + 1
+                        Event.Decrement -> state - 1
                     }
                 },
                 scheduler = AndroidSchedulers.mainThread(),
@@ -47,8 +47,8 @@ class Counter : AppCompatActivity() {
                                     it.source.map { it.toString() }.subscribe { label.text = it }
                             )
                             val events = listOf(
-                                    RxView.clicks(plus).map { Event.increment },
-                                    RxView.clicks(minus).map { Event.decrement }
+                                    RxView.clicks(plus).map { Event.Increment },
+                                    RxView.clicks(minus).map { Event.Decrement }
                             )
                             return@bind Bindings(subscriptions, events)
                         }))

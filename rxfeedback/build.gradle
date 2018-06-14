@@ -5,7 +5,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.NoTests'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         minSdkVersion 18
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 2 // increase this for every build
         versionName "0.1.2"
 
@@ -33,8 +33,8 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:' + versions.support
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre7:' + versions.kotlin
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jre8:' + versions.kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + versions.kotlin
     implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
     implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
     implementation 'com.github.NoTests.SharedSequence.kt:SharedSequence:' + versions.shared_sequence

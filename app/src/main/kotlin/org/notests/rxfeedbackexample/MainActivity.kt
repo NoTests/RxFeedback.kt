@@ -13,8 +13,8 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import org.notests.rxfeedbackexample.MyListAdapter.ViewHolder
 import org.notests.rxfeedbackexample.counter.Counter
-import org.notests.rxfeedbackexample.github_paginated_search.GithubPaginatedSearchActivity
-import org.notests.rxfeedbackexample.play_catch.PlayCatch
+import org.notests.rxfeedbackexample.github.paginated.search.GithubPaginatedSearchActivity
+import org.notests.rxfeedbackexample.play.catch.PlayCatch
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,9 +29,9 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = MyListAdapter(Item.values().toList(), {
                 when (it) {
-                    Item.counter -> startActivity(Intent(this@MainActivity, Counter::class.java))
-                    Item.playCatch -> startActivity(Intent(this@MainActivity, PlayCatch::class.java))
-                    Item.githubPaginatedSearch -> startActivity(Intent(this@MainActivity, GithubPaginatedSearchActivity::class.java))
+                    Item.Counter -> startActivity(Intent(this@MainActivity, Counter::class.java))
+                    Item.PlayCatch -> startActivity(Intent(this@MainActivity, PlayCatch::class.java))
+                    Item.GithubPaginatedSearch -> startActivity(Intent(this@MainActivity, GithubPaginatedSearchActivity::class.java))
                 }
             })
         }
@@ -39,9 +39,9 @@ class MainActivity : AppCompatActivity() {
 }
 
 enum class Item(val displayName: String) {
-    counter("Counter"),
-    playCatch("Play Catch"),
-    githubPaginatedSearch("Github pagination")
+    Counter("Counter"),
+    PlayCatch("Play Catch"),
+    GithubPaginatedSearch("Github pagination")
 }
 
 class MyListAdapter(private val items: List<Item>, private val onClick: (Item) -> (Unit)) : RecyclerView.Adapter<ViewHolder>() {

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.notests.rxfeedbackexample.play_catch.PlayCatch">
+    tools:context="org.notests.rxfeedbackexample.play.catch.PlayCatch">
 
     <TextView
         android:id="@+id/label"
@@ -56,7 +56,8 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:text="throw"
-            android:textColor="@android:color/holo_blue_dark"
+            android:textColor="@drawable/button"
+            android:clickable="true"
             android:textSize="16sp" />
 
     </RelativeLayout>

@@ -1,4 +1,4 @@
-package org.notests.rxfeedbackexample.github_paginated_search
+package org.notests.rxfeedbackexample.github.paginated.search
 
 import android.os.Bundle
 import android.support.annotation.MainThread
@@ -13,8 +13,8 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v7.widget.RxSearchView
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.disposables.Disposable
@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.activity_github_paginated_search.*
 import okhttp3.*
 import org.notests.rxfeedback.*
 import org.notests.rxfeedbackexample.R
-import org.notests.rxfeedbackexample.github_paginated_search.RepositoryRecyclerViewAdapter.ViewHolder
+import org.notests.rxfeedbackexample.github.paginated.search.RepositoryRecyclerViewAdapter.ViewHolder
 import org.notests.sharedsequence.*
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -165,8 +165,8 @@ class GithubPaginatedSearchActivity : AppCompatActivity() {
         disposable = Driver.system(
                 initialState = State.empty,
                 reduce = { state: State, event: Event -> State.reduce(state, event) },
-                feedback = listOf(bindUI, bindAutomatic))
-                .debug("", { Log.d("TAG", "State: $it") })
+                feedback = listOf(bindUI,
+                        bindAutomatic))
                 .drive()
     }
 
