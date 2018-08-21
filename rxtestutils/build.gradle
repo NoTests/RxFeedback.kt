@@ -10,13 +10,10 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 18
+        minSdkVersion 9
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -31,10 +28,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:' + versions.support
-
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
-
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + versions.kotlin
     implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
     implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
@@ -43,9 +37,4 @@ dependencies {
         exclude module: 'kotlin-stdlib'
         exclude module: 'kotlin-runtime'
     }
-
-    testImplementation 'junit:junit:' + versions.junit
-
-    androidTestImplementation 'com.android.support.test:runner:' + versions.test_runner
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + versions.espresso
 }

@@ -5,67 +5,60 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.NoTests'
 
 android {
-    compileSdkVersion 27
+	compileSdkVersion 27
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
+	sourceSets {
+		main.java.srcDirs += 'src/main/kotlin'
+		test.java.srcDirs += 'src/test/kotlin'
+	}
 
-    defaultConfig {
-        minSdkVersion 18
-        targetSdkVersion 27
-        versionCode 2 // increase this for every build
-        versionName "0.1.2"
+	defaultConfig {
+		minSdkVersion 9
+		targetSdkVersion 27
+		versionCode 3 // increase this for every build
+		versionName "0.1.3"
+	}
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+		}
+	}
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:' + versions.support
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + versions.kotlin
-    implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
-    implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
-    implementation 'com.github.NoTests.SharedSequence.kt:SharedSequence:' + versions.shared_sequence
+	implementation fileTree(include: ['*.jar'], dir: 'libs')
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:' + versions.kotlin
+	implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
+	implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
+	implementation 'com.github.NoTests.SharedSequence.kt:SharedSequence:' + versions.shared_sequence
 
-    testImplementation project(':rxtestutils')
-    testImplementation 'junit:junit:' + versions.junit
-
-    androidTestImplementation 'com.android.support.test:runner:' + versions.test_runner
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:' + versions.espresso
+	testImplementation project(':rxtestutils')
+	testImplementation 'junit:junit:' + versions.junit
 }
 
 // build a jar with source files
 task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+	from android.sourceSets.main.java.srcDirs
+	classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
-    failOnError  false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
+	failOnError false
+	source = android.sourceSets.main.java.sourceFiles
+	classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+	classpath += configurations.compile
 }
 
 // build a jar with javadoc
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+	classifier = 'javadoc'
+	from javadoc.destinationDir
 }
 
 artifacts {
-    archives sourcesJar
-    archives javadocJar
+	archives sourcesJar
+	archives javadocJar
 }
