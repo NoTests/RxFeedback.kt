@@ -15,8 +15,8 @@ android {
 	defaultConfig {
 		minSdkVersion 9
 		targetSdkVersion 27
-		versionCode 4 // increase this for every build
-		versionName "0.1.4"
+		versionCode 14 // increase this for every build
+		versionName "0.1.14"
 	}
 
 	buildTypes {

@@ -5,18 +5,20 @@
 ext.versions = [:]
 
 def versions = [:]
-versions.rxjava2 = '2.1.14'
+
+// common dependencies
+versions.rxjava2 = '2.2.0'
 versions.rx_android = '2.0.2'
-versions.rx_kotlin = '2.2.0'
-versions.kotlin = '1.2.41'
-versions.espresso = '3.0.1'
-versions.support = '27.1.1'
-versions.junit = '4.12'
-versions.test_runner = '1.0.1'
-versions.rxbinding = '2.1.1'
+versions.rx_kotlin = '2.3.0'
+versions.kotlin = '1.2.51'
 versions.shared_sequence = '0.1.13'
-versions.constraint_layout = '1.1.1'
-versions.okhttp = '3.10.0'
+versions.junit = '4.12'
+
+// app dependencies
+versions.support = '27.1.1'
+versions.constraint_layout = '1.1.2'
+versions.okhttp = '3.11.0'
 versions.moshi = '1.6.0'
+versions.rxbinding = '2.1.1'
 
 ext.versions = versions

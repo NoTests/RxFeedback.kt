@@ -126,6 +126,6 @@ allprojects {
 ```
  Add the dependency
 ```
-implementation 'com.github.NoTests:RxFeedback.kt:0.1.4'
+implementation 'com.github.NoTests:RxFeedback.kt:x.y.z'
 ```
 
