@@ -245,7 +245,7 @@ fun <State, Event> bind(bindings: (ObservableSchedulerContext<State>) -> (Bindin
             Observable.using({
                 bindings(state)
             }, { bindings: Bindings<Event> ->
-                Observable.merge(bindings.events)
+                Observable.merge(bindings.events).concatWith(Observable.never())
                         .enqueue(state.scheduler)
             }, { it.dispose() })
         }
@@ -258,7 +258,7 @@ fun <State, Event> bindSafe(bindings: (Driver<State>) -> (Bindings<Event>)): (Dr
             Observable.using({
                 bindings(state)
             }, { bindings: Bindings<Event> ->
-                Observable.merge(bindings.events)
+                Observable.merge(bindings.events).concatWith(Observable.never())
             }, { it.dispose() })
                     .enqueue(Signal.scheduler)
                     .asSignal(Signal.empty<Event>())

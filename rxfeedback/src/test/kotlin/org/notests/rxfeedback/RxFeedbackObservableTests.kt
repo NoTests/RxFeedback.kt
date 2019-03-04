@@ -209,4 +209,29 @@ class RxFeedbackObservableTests {
                 next(200, "initial_a_b_c")
         ), res.events())
     }
+
+    @Test
+    fun testUIFeedbackNoEventsSpecified() {
+        val states = mutableListOf<Int>()
+        val res = scheduler.start {
+            val producer = react<Int, Int, Int>(
+                    query = { Optional.Some(0) },
+                    effects = {
+                        Observable.fromArray(1, 1, 1)
+                    })
+
+            val binding = bind<Int, Int> { state ->
+                val subscriptions = listOf(
+                        state.source.subscribe { states.add(it) }
+                )
+                return@bind Bindings(subscriptions, listOf())
+            }
+
+            Observables.system(initialState = 0,
+                    reduce = { oldState, event: Int -> oldState + event },
+                    scheduler = scheduler,
+                    scheduledFeedback = listOf(binding, producer))
+        }
+        assertEquals(res.events().count(), states.count())
+    }
 }
