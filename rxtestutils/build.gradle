@@ -2,18 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
+    compileSdkVersion buildConfig.compileSdkVersion
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion buildConfig.minSdkVersion
     }
 
     buildTypes {
@@ -27,13 +19,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
-    implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
-    implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
-    implementation('io.reactivex.rxjava2:rxkotlin:' + versions.rx_kotlin) {
-        exclude module: 'rxjava'
-        exclude module: 'kotlin-stdlib'
-        exclude module: 'kotlin-runtime'
-    }
+	implementation deps.kotlinStdlib
+	implementation deps.rxJava
+	implementation deps.rxAndroid
+	implementation deps.rxKotlin
 }

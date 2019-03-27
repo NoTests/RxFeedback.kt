@@ -18,8 +18,6 @@ class RxFeedbackObservableTests {
 
     var scheduler = TestScheduler()
 
-    // todo add testEventsAreArrivingOnCorrectScheduler - haven't investigated SerialDispatchQueueScheduler
-
     @Test
     fun testInitial() {
         val res = scheduler.start {
@@ -172,7 +170,7 @@ class RxFeedbackObservableTests {
         assertTrue((res.events()[1].value as Event.Next<String>).value.contains("_b") ||
                 (res.events()[2].value as Event.Next<String>).value.contains("_b"))
 
-        var ignoringAB = res.events().map {
+        val ignoringAB = res.events().map {
             var value = (it.value as Event.Next<String>).value
             value = value.replace("_a", "_x")
             value = value.replace("_b", "_x")

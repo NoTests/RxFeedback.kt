@@ -11,11 +11,10 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 /** Created by juraj on 12/11/2017. */
 
 object TestDefaults {
-    val create = 100L // milliseconds
-    val subscribe = 200L // milliseconds
-    val dispose = 1000L // milliseconds
+    const val create = 100L // milliseconds
+    const val subscribe = 200L // milliseconds
+    const val dispose = 1000L // milliseconds
 }
-
 
 fun <T> TestScheduler.createColdObservable(vararg events: Recorded<Event<T>>): Observable<T> =
         events.map { (delay, value) ->
@@ -31,7 +30,7 @@ fun <T> TestScheduler.createColdObservable(vararg events: Recorded<Event<T>>): O
         }.merge().dematerialize()
 
 fun TestScheduler.scheduleAt(delay: Long, timeUnit: TimeUnit = MILLISECONDS, action: () -> Unit) =
-        this.createWorker().schedule(action, delay, MILLISECONDS)
+        this.createWorker().schedule(action, delay, timeUnit)
 
 fun TestScheduler.advanceTimeBy(delay: Long) =
         this.advanceTimeBy(delay, MILLISECONDS)
