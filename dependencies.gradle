@@ -1,0 +1,20 @@
+// common dependencies & versions
+
+ext.buildConfig = [
+		'minSdkVersion'    : 9,
+		'compileSdkVersion': 28,
+		'targetSdkVersion' : 28
+]
+
+ext.versions = [
+		'kotlin': '1.3.21'
+]
+
+ext.deps = [
+		'rxJava'        : 'io.reactivex.rxjava2:rxjava:2.2.8',
+		'rxAndroid'     : 'io.reactivex.rxjava2:rxandroid:2.1.1',
+		'rxKotlin'      : 'io.reactivex.rxjava2:rxkotlin:2.3.0',
+		'kotlinStdlib'  : 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin,
+		'sharedSequence': 'com.github.NoTests.SharedSequence.kt:SharedSequence:0.1.13',
+		'junit'         : 'junit:junit:4.12'
+]

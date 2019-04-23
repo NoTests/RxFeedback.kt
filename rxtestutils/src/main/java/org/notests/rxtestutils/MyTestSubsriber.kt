@@ -25,7 +25,7 @@ class MyTestSubscriber<T>(private val scheduler: TestScheduler) : Observer<T> {
     private var values: List<Recorded<Event<T>>> = emptyList()
 
     override fun onError(e: Throwable) {
-        values += Recorded(scheduler.now(MILLISECONDS), Event.Error(e ?: Error("Unknown")))
+        values += Recorded(scheduler.now(MILLISECONDS), Event.Error(e))
     }
 
     override fun onNext(t: T) {

@@ -5,7 +5,6 @@ import android.support.annotation.MainThread
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,7 +55,13 @@ sealed class Event {
 
 
 val State.Companion.empty: State
-    get() = State(search = "", nextPageUrl = Optional.None(), shouldLoadNextPage = false, results = emptyList(), lastError = Optional.None())
+    get() = State(
+        search = "",
+        nextPageUrl = Optional.None(),
+        shouldLoadNextPage = false,
+        results = emptyList(),
+        lastError = Optional.None()
+    )
 
 // transitions
 fun State.Companion.reduce(state: State, event: Event): State =
@@ -93,11 +98,9 @@ fun State.Companion.reduce(state: State, event: Event): State =
         }
 
 // queries
-var State.loadNextPage: Optional<String>
+val State.loadNextPage: Optional<String>
     get() =
         if (this.shouldLoadNextPage) this.nextPageUrl else Optional.None()
-    set(value) {}
-
 
 class GithubPaginatedSearchActivity : AppCompatActivity() {
 
@@ -118,7 +121,9 @@ class GithubPaginatedSearchActivity : AppCompatActivity() {
 
         recyclerview.apply {
             layoutManager = LinearLayoutManager(this@GithubPaginatedSearchActivity)
-            adapter = RepositoryRecyclerViewAdapter(emptyList(), { /* do nothing on click */ })
+            adapter = RepositoryRecyclerViewAdapter(
+                emptyList(),
+                { /* do nothing on click */ })
         }
 
         // RxFeedback
@@ -186,8 +191,7 @@ sealed class GitHubServiceError : Error() {
     object GithubLimitReached : GitHubServiceError()
 }
 
-var GitHubServiceError.displayMessage: String
-    set(value) {}
+val GitHubServiceError.displayMessage: String
     get() {
         return when (this) {
             GitHubServiceError.Offline -> "Ups, no network connectivity"
@@ -268,7 +272,14 @@ class RepositoryService {
                     val repositories = parseRepositories(response.body()!!.string())
                     val nextUrl = parseNextUrl(response)
 
-                    e.onNext(Result.Success(Pair(repositories, nextUrl)) as SearchRepositoriesResponse)
+                    e.onNext(
+                        Result.Success(
+                            Pair(
+                                repositories,
+                                nextUrl
+                            )
+                        ) as SearchRepositoriesResponse
+                    )
                     e.onComplete()
                 }
 

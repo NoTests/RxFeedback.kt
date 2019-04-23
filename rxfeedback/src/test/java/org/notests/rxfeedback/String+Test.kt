@@ -4,14 +4,13 @@ package org.notests.rxfeedback
  * Created by juraj on 13/11/2017.
  */
 
-var String.needsToAppendDot: Optional<Unit>
+val String.needsToAppendDot: Optional<Unit>
     get() =
         if (this == "initial" || this == "initial_." || this == "initial_._.") {
             Optional.Some(Unit)
         } else Optional.None()
-    set(value) {}
 
-var String.needsToAppend: Optional<String>
+val String.needsToAppend: Optional<String>
     get() =
         if (this == "initial") {
             Optional.Some("_a")
@@ -22,9 +21,8 @@ var String.needsToAppend: Optional<String>
         } else {
             Optional.None<String>()
         }
-    set(value) {}
 
-var String.needsToAppendParallel: Set<String>
+val String.needsToAppendParallel: Set<String>
     get() =
         if (this.contains("_a") && this.contains("_b")) {
             setOf("_c")
@@ -38,4 +36,3 @@ var String.needsToAppendParallel: Set<String>
             }
             result
         }
-    set(value) {}

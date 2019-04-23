@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:id="@+id/root"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/root"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	tools:ignore="HardcodedText">
 
-    <TextView
-        android:id="@+id/repo_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="Repository"
-        android:textSize="18sp" />
+	<TextView
+		android:id="@+id/repo_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:padding="8dp"
+		android:text="Repository"
+		android:textSize="18sp" />
 </RelativeLayout>

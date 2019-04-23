@@ -3,17 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 27
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += 'src/test/kotlin'
-    }
+    compileSdkVersion buildConfig.compileSdkVersion
 
     defaultConfig {
         applicationId "org.notests.rxfeedbackexample"
         minSdkVersion 18
-        targetSdkVersion 27
+        targetSdkVersion buildConfig.targetSdkVersion
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -26,31 +21,43 @@ android {
     }
 }
 
+ext {
+	supportVersion = '27.1.1'
+	constraintLayoutVersion = '1.1.2'
+	okhttpVersion = '3.11.0'
+	moshiVersion = '1.6.0'
+	rxbindingVersion = '2.1.1'
+	multidexVersion = '1.0.3'
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
-    implementation 'com.android.support:appcompat-v7:' + versions.support
-    implementation 'com.android.support:design:' + versions.support
-    implementation 'com.android.support.constraint:constraint-layout:' + versions.constraint_layout
+	implementation project(path: ':rxfeedback')
 
-    implementation project(path: ':rxfeedback')
-    implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
-    implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
+    implementation deps.kotlinStdlib
 
-    implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:' + versions.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:' + versions.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:' + versions.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding-design-kotlin:' + versions.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:' + versions.rxbinding
-    implementation 'com.jakewharton.rxbinding2:rxbinding-leanback-v17-kotlin:' + versions.rxbinding
+	implementation deps.rxJava
+	implementation deps.rxAndroid
 
-    implementation 'com.github.NoTests.SharedSequence.kt:SharedSequence:' + versions.shared_sequence
-    // rest
-    implementation 'com.squareup.okhttp3:okhttp:' + versions.okhttp
-    implementation 'com.squareup.moshi:moshi:' + versions.moshi
-    implementation 'com.squareup.moshi:moshi-kotlin:' + versions.moshi
+    implementation deps.sharedSequence
 
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support:appcompat-v7:' + supportVersion
+    implementation 'com.android.support:design:' + supportVersion
+    implementation 'com.android.support.constraint:constraint-layout:' + constraintLayoutVersion
 
-    testImplementation 'junit:junit:' + versions.junit
+    implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:' + rxbindingVersion
+    implementation 'com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:' + rxbindingVersion
+    implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:' + rxbindingVersion
+    implementation 'com.jakewharton.rxbinding2:rxbinding-design-kotlin:' + rxbindingVersion
+    implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:' + rxbindingVersion
+    implementation 'com.jakewharton.rxbinding2:rxbinding-leanback-v17-kotlin:' + rxbindingVersion
+
+
+    implementation 'com.squareup.okhttp3:okhttp:' + okhttpVersion
+    implementation 'com.squareup.moshi:moshi:' + moshiVersion
+    implementation 'com.squareup.moshi:moshi-kotlin:' + moshiVersion
+
+    implementation 'com.android.support:multidex:' + multidexVersion
+
+    testImplementation deps.junit
 }

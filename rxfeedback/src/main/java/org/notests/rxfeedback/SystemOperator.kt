@@ -53,7 +53,7 @@ fun <State, Event> Observables.Companion.system(
                         replaySubject.onNext(output)
                     }
                     .observeOn(scheduler)
-        }!!
+        }
 
 /**
  * System simulation will be started upon subscription and stopped after subscription is disposed.

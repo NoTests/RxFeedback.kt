@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/rxfeedback
     docker:
-        - image: circleci/android:api-27-alpha
+        - image: circleci/android:api-28-alpha
     environment:
         JVM_OPTS: -Xmx3200m
     steps:
@@ -16,7 +16,7 @@ jobs:
               key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}-{{ checksum  "rxfeedback/build.gradle" }}
           - run:
               name: Download Dependencies
-              command: ./gradlew androidDependencies --debug --stacktrace
+              command: ./gradlew androidDependencies
           - save_cache:
               paths:
                 - ~/.gradle

@@ -5,37 +5,22 @@ apply plugin: 'com.github.dcendents.android-maven'
 group = 'com.github.NoTests'
 
 android {
-	compileSdkVersion 27
-
-	sourceSets {
-		main.java.srcDirs += 'src/main/kotlin'
-		test.java.srcDirs += 'src/test/kotlin'
-	}
+	compileSdkVersion buildConfig.compileSdkVersion
 
 	defaultConfig {
-		minSdkVersion 9
-		targetSdkVersion 27
-		versionCode 14 // increase this for every build
-		versionName "0.1.14"
-	}
-
-	buildTypes {
-		release {
-			minifyEnabled false
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-		}
+		minSdkVersion buildConfig.minSdkVersion
 	}
 }
 
 dependencies {
 	implementation fileTree(include: ['*.jar'], dir: 'libs')
-	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + versions.kotlin
-	implementation 'io.reactivex.rxjava2:rxjava:' + versions.rxjava2
-	implementation 'io.reactivex.rxjava2:rxandroid:' + versions.rx_android
-	implementation 'com.github.NoTests.SharedSequence.kt:SharedSequence:' + versions.shared_sequence
+	implementation deps.kotlinStdlib
+	implementation deps.rxJava
+	implementation deps.rxAndroid
+	implementation deps.sharedSequence
 
 	testImplementation project(':rxtestutils')
-	testImplementation 'junit:junit:' + versions.junit
+	testImplementation deps.junit
 }
 
 // build a jar with source files
