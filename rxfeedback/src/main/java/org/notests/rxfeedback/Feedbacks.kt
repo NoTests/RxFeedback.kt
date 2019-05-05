@@ -94,6 +94,26 @@ fun <State, Query, Event> reactSafe(
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
  *
+ * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
+ *
+ * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ *
+ * @param query Part of state that controls feedback loop.
+ * @param effects Chooses which effects to perform for certain query result.
+ * @return Feedback loop performing the effects.
+ */
+fun <State, Query, Event> reactSafe(
+        query: (State) -> Optional<Query>,
+        effects: (Query) -> Signal<Event>
+): (Driver<State>) -> Signal<Event> =
+        reactSafe(query, { lhs, rhs -> lhs == rhs }, effects)
+
+
+/**
+ * State: State type of the system.
+ * Query: Subset of state used to control the feedback loop.
+ *
  * When `query` returns some set of values, each value is being passed into `effects` lambda to decide which effects should be performed.
  *
  * Effects are not interrupted for elements in the new `query` that were present in the `old` query.
