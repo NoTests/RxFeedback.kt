@@ -1,13 +1,12 @@
 package org.notests.rxfeedback
 
+import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.Scheduler
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.BiFunction
-import org.notests.sharedsequence.Driver
-import org.notests.sharedsequence.Signal
-import org.notests.sharedsequence.asSignal
-import org.notests.sharedsequence.empty
+import io.reactivex.subjects.BehaviorSubject
+import org.notests.sharedsequence.*
 
 /**
  * State: State type of the system.
@@ -27,34 +26,18 @@ fun <State, Query, Event> react(
         query: (State) -> Optional<Query>,
         areEqual: (Query, Query) -> Boolean,
         effects: (Query) -> Observable<Event>
-): (ObservableSchedulerContext<State>) -> Observable<Event> =
-        { state ->
-            state.source.map(query)
-                    .distinctUntilChanged { lhs, rhs ->
-                        when (lhs) {
-                            is Optional.Some<Query> -> {
-                                when (rhs) {
-                                    is Optional.Some<Query> -> areEqual(lhs.data, rhs.data)
-                                    is Optional.None<Query> -> false
-                                }
-                            }
-                            is Optional.None<Query> -> {
-                                when (rhs) {
-                                    is Optional.Some<Query> -> false
-                                    is Optional.None<Query> -> true
-                                }
-                            }
-                        }
-                    }
-                    .switchMap { control: Optional<Query> ->
-                        if (control !is Optional.Some<Query>) {
-                            return@switchMap Observable.empty<Event>()
-                        }
-
-                        effects(control.data)
-                                .enqueue(state.scheduler)
-                    }
+): (ObservableSchedulerContext<State>) -> Observable<Event> = react(
+        queries = { state: State ->
+            when (val result = query(state)) {
+                is Optional.Some -> mapOf(ConstHashable(result.data) to result.data)
+                is Optional.None -> mapOf()
+            }
+        },
+        effects = { initial: Query, _ ->
+            effects(initial)
         }
+)
+
 
 /**
  * State: State type of the system.
@@ -75,6 +58,7 @@ fun <State, Query, Event> react(
 ): (ObservableSchedulerContext<State>) -> Observable<Event> =
         react(query, { lhs, rhs -> lhs == rhs }, effects)
 
+
 /**
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
@@ -91,33 +75,6 @@ fun <State, Query, Event> react(
  */
 fun <State, Query, Event> reactSafe(
         query: (State) -> Optional<Query>,
-        areEqual: (Query, Query) -> Boolean,
-        effects: (Query) -> Signal<Event>
-): (Driver<State>) -> Signal<Event> =
-        { state ->
-            val observableSchedulerContext = ObservableSchedulerContext<State>(
-                    state.asObservable(),
-                    Signal.scheduler
-            )
-            react(query, areEqual, { effects(it).asObservable() })(observableSchedulerContext)
-                    .asSignal(Signal.empty())
-        }
-
-/**
- * State: State type of the system.
- * Query: Subset of state used to control the feedback loop.
- *
- * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
- * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
- *
- * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
- *
- * @param query Part of state that controls feedback loop.
- * @param effects Chooses which effects to perform for certain query result.
- * @return Feedback loop performing the effects.
- */
-fun <State, Query, Event> reactSafe(
-        query: (State) -> Optional<Query>,
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
         { state ->
@@ -128,6 +85,7 @@ fun <State, Query, Event> reactSafe(
             react(query, { effects(it).asObservable() })(observableSchedulerContext)
                     .asSignal(Signal.empty())
         }
+
 
 /**
  * State: State type of the system.
@@ -146,35 +104,14 @@ fun <State, Query, Event> reactSafe(
 fun <State, Query, Event> reactSet(
         query: (State) -> Set<Query>,
         effects: (Query) -> Observable<Event>
-): (ObservableSchedulerContext<State>) -> Observable<Event> =
-        { state ->
-            val query = state.source.map(query)
-                    .replay(1)
-                    .refCount()
-
-            val newQueries = Observable.zip(query, query.startWith(setOf<Query>()), BiFunction { current: Set<Query>, previous: Set<Query> -> current - previous })
-            val asyncScheduler = state.scheduler
-            newQueries.flatMap { controls: Set<Query> ->
-                Observable.merge(controls.map { control ->
-                    effects(control)
-                            .enqueue(state.scheduler)
-                            .takeUntilWithCompletedAsync(query.filter { !it.contains(control) }, state.scheduler)
-                })
-            }
+): (ObservableSchedulerContext<State>) -> Observable<Event> = react(
+        queries = { state: State ->
+            query(state).associateBy { it }
+        },
+        effects = { initial: Query, _ ->
+            effects(initial)
         }
-
-// This is important to avoid reentrancy issues. Completed event is only used for cleanup
-fun <Element, O> Observable<Element>.takeUntilWithCompletedAsync(other: Observable<O>, scheduler: Scheduler): Observable<Element> {
-    // this little piggy will delay completed event
-    val completeAsSoonAsPossible = Observable.empty<Element>().observeOn(scheduler)
-    return other
-            .take(1)
-            .map { _ -> completeAsSoonAsPossible }
-            // this little piggy will ensure self is being run first
-            .startWith(this)
-            // this little piggy will ensure that new events are being blocked immediatelly
-            .switchMap { it }
-}
+)
 
 /**
  * State: State type of the system.
@@ -195,7 +132,7 @@ fun <State, Query, Event> reactSetSafe(
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
         { state ->
-            val observableSchedulerContext = ObservableSchedulerContext<State>(
+            val observableSchedulerContext = ObservableSchedulerContext(
                     state.asObservable(),
                     Signal.scheduler
             )
@@ -203,6 +140,156 @@ fun <State, Query, Event> reactSetSafe(
                     .asSignal(Signal.empty())
         }
 
+
+private class RequestLifetimeTracking<Query, QueryID, Event>(
+        val effects: (intialQuery: Query, state: Observable<Query>) -> Observable<Event>,
+        val scheduler: Scheduler,
+        val emitter: Emitter<Event>) {
+
+    class LifetimeToken
+
+    data class QueryLifetime<Query>(val subscription: Disposable,
+                                    val lifetimeIdentifier: LifetimeToken,
+                                    val latestQuery: BehaviorSubject<Query>)
+
+    data class State<Query, QueryID>(var isDisposed: Boolean,
+                                     var lifetimeByIdentifier: MutableMap<QueryID, QueryLifetime<Query>>)
+
+    val state = AsyncSynchronized(State<Query, QueryID>(false, mutableMapOf()))
+
+
+    fun forwardQueries(queries: Map<QueryID, Query>) {
+        this.state.async { state ->
+            if (state.isDisposed) {
+                return@async
+            }
+            val lifetimeToUnsubscribeByIdentifier = state.lifetimeByIdentifier.toMutableMap()
+            for ((queryID, query) in queries) {
+                val queryLifetime = state.lifetimeByIdentifier[queryID]
+                if (queryLifetime != null) {
+                    lifetimeToUnsubscribeByIdentifier.remove(queryID)
+                    if (queryLifetime.latestQuery.value != query) {
+                        queryLifetime.latestQuery.onNext(query)
+                    } else continue
+                } else {
+                    val subscription = CompositeDisposable() // TODO Change to SingleAssignmentDisposable
+                    val latestQuerySubject = BehaviorSubject.createDefault(query)
+                    val lifetime = LifetimeToken()
+                    state.lifetimeByIdentifier[queryID] = QueryLifetime(
+                            subscription = subscription,
+                            lifetimeIdentifier = lifetime,
+                            latestQuery = latestQuerySubject
+                    )
+
+                    fun valid(state: State<Query, QueryID>): Boolean {
+                        return !state.isDisposed && state.lifetimeByIdentifier[queryID]?.lifetimeIdentifier === lifetime
+                    }
+
+                    val queriesSubscription = this.effects(query, latestQuerySubject)
+                            .observeOn(this.scheduler)
+                            .subscribe({ event: Event ->
+                                this.state.async {
+                                    if (valid(it)) {
+                                        emitter.onNext(event)
+                                    }
+                                }
+                            }, { throwable: Throwable ->
+                                this.state.async {
+                                    if (valid(it)) {
+                                        emitter.onError(throwable)
+                                    }
+                                }
+                            })
+
+                    subscription.add(queriesSubscription)
+                }
+            }
+            lifetimeToUnsubscribeByIdentifier.keys.forEach { queryID ->
+                state.lifetimeByIdentifier.remove(queryID)
+            }
+            lifetimeToUnsubscribeByIdentifier.values.forEach {
+                it.subscription.dispose()
+            }
+        }
+    }
+
+    fun dispose() {
+        this.state.async { state ->
+            state.lifetimeByIdentifier.values.forEach { it.subscription.dispose() }
+            state.lifetimeByIdentifier = mutableMapOf()
+            state.isDisposed = true
+        }
+    }
+}
+
+
+/**
+ * State: State type of the system.
+ * Request: Subset of state used to control the feedback loop.
+ * For every uniquely identifiable request `effects` closure is invoked with the initial value of the request and future requests corresponding to the same identifier.
+ * Subsequent equal values of request are not emitted from the effects state parameter.
+ *
+ * @param queries: Requests to perform some effects.
+ * @param effects: The request effects.
+ * @param initial: Initial request.
+ * @param state: Latest request state.
+ * @return The feedback loop performing the effects.
+ */
+fun <State, Query, QueryID, Event> react(queries: (State) -> Map<QueryID, Query>,
+                                         effects: (initial: Query, state: Observable<Query>) -> Observable<Event>
+): (ObservableSchedulerContext<State>) -> Observable<Event> {
+    return { stateContext ->
+        Observable.create { emitter ->
+            val state = RequestLifetimeTracking<Query, QueryID, Event>(effects, stateContext.scheduler, emitter)
+            val subscription = stateContext.source
+                    .map(queries)
+                    .subscribe({ queries ->
+                        state.forwardQueries(queries)
+                    }, { throwable: Throwable ->
+                        emitter.onError(throwable)
+                    }, {
+                        emitter.onComplete()
+                    })
+
+            emitter.setCancellable {
+                state.dispose()
+                subscription.dispose()
+            }
+        }
+    }
+}
+
+
+/**
+ * State: State type of the system.
+ * Request: Subset of state used to control the feedback loop.
+ * For every uniquely identifiable request `effects` closure is invoked with the initial value of the request and future requests corresponding to the same identifier.
+ * Subsequent equal values of request are not emitted from the effects state parameter.
+ *
+ * @param queries: Requests to perform some effects.
+ * @param effects: The request effects.
+ * @param initial: Initial request.
+ * @param state: Latest request state.
+ * @return The feedback loop performing the effects.
+ */
+fun <State, Query, QueryID, Event> reactSafe(queries: (State) -> Map<QueryID, Query>,
+                                             effects: (initial: Query, state: Driver<Query>) -> Signal<Event>
+): (Driver<State>) -> Signal<Event> {
+    return { state: Driver<State> ->
+        val observableSchedulerContext = ObservableSchedulerContext(
+                state.asObservable(),
+                Signal.scheduler
+        )
+        react(queries = queries,
+                effects = { initial, state ->
+                    effects(initial,
+                            state.asDriver(Driver.empty())
+                    ).asObservable()
+                }
+        )(observableSchedulerContext)
+                .asSignal(Signal.empty())
+    }
+}
 
 fun <Element> Observable<Element>.enqueue(scheduler: Scheduler): Observable<Element> =
         this
@@ -264,3 +351,26 @@ fun <State, Event> bindSafe(bindings: (Driver<State>) -> (Bindings<Event>)): (Dr
                     .asSignal(Signal.empty<Event>())
         }
 
+
+
+
+/**
+ * This looks like a performance issue, but it is ok when there is a single value present. Used in a `react` feedback loop.
+ */
+private data class ConstHashable<Value>(var value: Value) {
+
+    override fun hashCode(): Int {
+        return 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ConstHashable<*>
+
+        if (value != other.value) return false
+
+        return true
+    }
+}
