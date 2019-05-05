@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package org.notests.rxfeedback
 
 import io.reactivex.Emitter
@@ -29,7 +31,7 @@ fun <State, Query, Event> react(
 ): (ObservableSchedulerContext<State>) -> Observable<Event> = react(
         queries = { state: State ->
             when (val result = query(state)) {
-                is Optional.Some -> mapOf(ConstHashable(result.data) to result.data)
+                is Optional.Some -> mapOf(ConstHashable(result.data, areEqual) to result.data)
                 is Optional.None -> mapOf()
             }
         },
@@ -75,14 +77,15 @@ fun <State, Query, Event> react(
  */
 fun <State, Query, Event> reactSafe(
         query: (State) -> Optional<Query>,
+        areEqual: (Query, Query) -> Boolean,
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
         { state ->
-            val observableSchedulerContext = ObservableSchedulerContext<State>(
+            val observableSchedulerContext = ObservableSchedulerContext(
                     state.asObservable(),
                     Signal.scheduler
             )
-            react(query, { effects(it).asObservable() })(observableSchedulerContext)
+            react(query, areEqual, { effects(it).asObservable() })(observableSchedulerContext)
                     .asSignal(Signal.empty())
         }
 
@@ -172,7 +175,7 @@ private class RequestLifetimeTracking<Query, QueryID, Event>(
                         queryLifetime.latestQuery.onNext(query)
                     } else continue
                 } else {
-                    val subscription = CompositeDisposable() // TODO Change to SingleAssignmentDisposable
+                    val subscription = CompositeDisposable() // SingleAssignmentDisposable
                     val latestQuerySubject = BehaviorSubject.createDefault(query)
                     val lifetime = LifetimeToken()
                     state.lifetimeByIdentifier[queryID] = QueryLifetime(
@@ -272,6 +275,7 @@ fun <State, Query, QueryID, Event> react(queries: (State) -> Map<QueryID, Query>
  * @param state: Latest request state.
  * @return The feedback loop performing the effects.
  */
+@Suppress("NAME_SHADOWING")
 fun <State, Query, QueryID, Event> reactSafe(queries: (State) -> Map<QueryID, Query>,
                                              effects: (initial: Query, state: Driver<Query>) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> {
@@ -352,12 +356,10 @@ fun <State, Event> bindSafe(bindings: (Driver<State>) -> (Bindings<Event>)): (Dr
         }
 
 
-
-
 /**
  * This looks like a performance issue, but it is ok when there is a single value present. Used in a `react` feedback loop.
  */
-private data class ConstHashable<Value>(var value: Value) {
+private class ConstHashable<Value>(val value: Value, val areEqual: (Value, Value) -> Boolean) {
 
     override fun hashCode(): Int {
         return 0
@@ -369,8 +371,8 @@ private data class ConstHashable<Value>(var value: Value) {
 
         other as ConstHashable<*>
 
-        if (value != other.value) return false
-
-        return true
+        @Suppress("UNCHECKED_CAST")
+        val otherValue = other.value as Value
+        return areEqual(value, otherValue)
     }
 }
