@@ -164,23 +164,52 @@ fun <State, Query, Event> reactSetSafe(
         }
 
 
-private class RequestLifetimeTracking<Query, QueryID, Event>(
+/**
+ * The purpose of QueryLifetimeTracking is to activate, deactivate,
+ * as well as update already activated effects with the new Query that was returned.
+ */
+private class QueryLifetimeTracking<Query, QueryID, Event>(
         val effects: (intialQuery: Query, state: Observable<Query>) -> Observable<Event>,
         val scheduler: Scheduler,
         val emitter: Emitter<Event>) {
 
-    class LifetimeToken
+    /**
+     * Used to make sure that we only get events from the effects that are still active.
+     * Prevents concurrency issues caused by reactivation of the same effect (same QueryID)
+     */
+    private class LifetimeToken
 
-    data class QueryLifetime<Query>(val subscription: Disposable,
+    /**
+     * Used to track the effect that was started and update it with the new value of the Query.
+     */
+    private data class QueryLifetime<Query>(val subscription: Disposable,
                                     val lifetimeIdentifier: LifetimeToken,
                                     val latestQuery: BehaviorSubject<Query>)
 
-    data class State<Query, QueryID>(var isDisposed: Boolean,
+    /**
+     * State controls the effects by QueryID.
+     */
+    private data class State<QueryID, Query>(var isDisposed: Boolean,
                                      var lifetimeByIdentifier: MutableMap<QueryID, QueryLifetime<Query>>)
 
-    val state = AsyncSynchronized(State<Query, QueryID>(false, mutableMapOf()))
+    private val state = AsyncSynchronized(State<QueryID, Query>(false, mutableMapOf()))
 
 
+    /**
+     * When a new QueryID is provided in the queries parameter and was not previously present in the state.lifeTimeByIdentifier,
+     * we start the effect with corresponding Query as initial value.
+     * The effect will remain active and generated events will be pushed back to the system
+     * as long as the same QueryID that started the effect is still present in subsequent calls.
+     *
+     *
+     * When for the same QueryID, a new distinct value of Query is provided, the already started effect
+     * will receive the new Query.
+     *
+     * When a QueryID that is present in state.lifeTimeByIdentifier but is not present in the provided
+     * queries the corresponding effect is disposed.
+     *
+     * @param queries used to activate, deactivate, update effects.
+     */
     fun forwardQueries(queries: Map<QueryID, Query>) {
         this.state.async { state ->
             if (state.isDisposed) {
@@ -204,7 +233,7 @@ private class RequestLifetimeTracking<Query, QueryID, Event>(
                             latestQuery = latestQuerySubject
                     )
 
-                    fun valid(state: State<Query, QueryID>): Boolean {
+                    fun valid(state: State<QueryID, Query>): Boolean {
                         return !state.isDisposed && state.lifetimeByIdentifier[queryID]?.lifetimeIdentifier === lifetime
                     }
 
@@ -263,7 +292,7 @@ fun <State, Query, QueryID, Event> react(queries: (State) -> Map<QueryID, Query>
 ): (ObservableSchedulerContext<State>) -> Observable<Event> {
     return { stateContext ->
         Observable.create { emitter ->
-            val state = RequestLifetimeTracking<Query, QueryID, Event>(effects, stateContext.scheduler, emitter)
+            val state = QueryLifetimeTracking<Query, QueryID, Event>(effects, stateContext.scheduler, emitter)
             val subscription = stateContext.source
                     .map(queries)
                     .subscribe({ queries ->
