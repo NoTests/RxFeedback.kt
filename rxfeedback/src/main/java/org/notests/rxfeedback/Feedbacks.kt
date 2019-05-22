@@ -224,14 +224,8 @@ private class QueryLifetimeTracking<Query, QueryID, Event>(
                         queryLifetime.latestQuery.onNext(query)
                     } else continue
                 } else {
-                    val subscription = CompositeDisposable() // SingleAssignmentDisposable
                     val latestQuerySubject = BehaviorSubject.createDefault(query)
                     val lifetime = LifetimeToken()
-                    state.lifetimeByIdentifier[queryID] = QueryLifetime(
-                            subscription = subscription,
-                            lifetimeIdentifier = lifetime,
-                            latestQuery = latestQuerySubject
-                    )
 
                     fun valid(state: State<QueryID, Query>): Boolean {
                         return !state.isDisposed && state.lifetimeByIdentifier[queryID]?.lifetimeIdentifier === lifetime
@@ -253,7 +247,11 @@ private class QueryLifetimeTracking<Query, QueryID, Event>(
                                 }
                             })
 
-                    subscription.add(queriesSubscription)
+                    state.lifetimeByIdentifier[queryID] = QueryLifetime(
+                            subscription = queriesSubscription,
+                            lifetimeIdentifier = lifetime,
+                            latestQuery = latestQuerySubject
+                    )
                 }
             }
             lifetimeToUnsubscribeByIdentifier.keys.forEach { queryID ->
