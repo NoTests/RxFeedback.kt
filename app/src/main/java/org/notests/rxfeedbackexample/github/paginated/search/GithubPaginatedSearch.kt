@@ -40,10 +40,10 @@ data class Repository(val name: String, val url: String)
 
 data class State(
         var search: String,
-        var nextPageUrl: Optional<String>,
+        var nextPageUrl: String?,
         var shouldLoadNextPage: Boolean,
         var results: List<Repository>,
-        var lastError: Optional<GitHubServiceError>) {
+        var lastError: GitHubServiceError?) {
     companion object {}
 }
 
@@ -56,11 +56,11 @@ sealed class Event {
 
 val State.Companion.empty: State
     get() = State(
-        search = "",
-        nextPageUrl = Optional.None(),
-        shouldLoadNextPage = false,
-        results = emptyList(),
-        lastError = Optional.None()
+            search = "",
+            nextPageUrl = null,
+            shouldLoadNextPage = false,
+            results = emptyList(),
+            lastError = null
     )
 
 // transitions
@@ -69,16 +69,16 @@ fun State.Companion.reduce(state: State, event: Event): State =
             is Event.SearchChanged -> {
                 if (event.search.isEmpty()) {
                     state.copy(search = event.search,
-                            nextPageUrl = Optional.None(),
+                            nextPageUrl = null,
                             shouldLoadNextPage = false,
                             results = emptyList(),
-                            lastError = Optional.None())
+                            lastError = null)
                 } else {
                     state.copy(search = event.search,
-                            nextPageUrl = Optional.Some("https://api.github.com/search/repositories?q=${event.search}"),
+                            nextPageUrl = "https://api.github.com/search/repositories?q=${event.search}",
                             results = emptyList(),
                             shouldLoadNextPage = true,
-                            lastError = Optional.None())
+                            lastError = null)
                 }
             }
 
@@ -90,17 +90,17 @@ fun State.Companion.reduce(state: State, event: Event): State =
                         state.copy(results = state.results.plus(event.response.value.first),
                                 shouldLoadNextPage = false,
                                 nextPageUrl = event.response.value.second,
-                                lastError = Optional.None())
+                                lastError = null)
                     is Result.Failure ->
                         state.copy(shouldLoadNextPage = false,
-                                lastError = Optional.Some(event.response.error))
+                                lastError = event.response.error)
                 }
         }
 
 // queries
-val State.loadNextPage: Optional<String>
+val State.loadNextPage: String?
     get() =
-        if (this.shouldLoadNextPage) this.nextPageUrl else Optional.None()
+        if (this.shouldLoadNextPage) this.nextPageUrl else null
 
 class GithubPaginatedSearchActivity : AppCompatActivity() {
 
@@ -122,8 +122,8 @@ class GithubPaginatedSearchActivity : AppCompatActivity() {
         recyclerview.apply {
             layoutManager = LinearLayoutManager(this@GithubPaginatedSearchActivity)
             adapter = RepositoryRecyclerViewAdapter(
-                emptyList(),
-                { /* do nothing on click */ })
+                    emptyList(),
+                    { /* do nothing on click */ })
         }
 
         // RxFeedback
@@ -199,7 +199,7 @@ val GitHubServiceError.displayMessage: String
         }
     }
 
-private typealias SearchRepositoriesResponse = Result<Pair<List<Repository>, Optional<String>>, GitHubServiceError>
+private typealias SearchRepositoriesResponse = Result<Pair<List<Repository>, String?>, GitHubServiceError>
 
 
 // TODO this is not working for now
@@ -273,12 +273,12 @@ class RepositoryService {
                     val nextUrl = parseNextUrl(response)
 
                     e.onNext(
-                        Result.Success(
-                            Pair(
-                                repositories,
-                                nextUrl
-                            )
-                        ) as SearchRepositoriesResponse
+                            Result.Success(
+                                    Pair(
+                                            repositories,
+                                            nextUrl
+                                    )
+                            ) as SearchRepositoriesResponse
                     )
                     e.onComplete()
                 }
@@ -289,8 +289,8 @@ class RepositoryService {
                 .observeOn(Schedulers.computation())
     }
 
-    private fun parseNextUrl(response: Response): Optional<String> {
-        val linkHeader = response.headers().get("Link") ?: return Optional.None()
+    private fun parseNextUrl(response: Response): String? {
+        val linkHeader = response.headers().get("Link") ?: return null
         val links =
                 try {
                     parseLinks(linkHeader)
@@ -298,8 +298,7 @@ class RepositoryService {
                     emptyMap<String, String>()
                 }
 
-        val nextLink = links["next"] ?: return Optional.None()
-        return Optional.Some(nextLink)
+        return links["next"]
     }
 
     private fun parseRepositories(json: String): List<Repository> {
@@ -328,16 +327,15 @@ fun parseLinks(links: String): Map<String, String> {
     return result
 }
 
-private fun GithubPaginatedSearchActivity.showOrHideError(error: Optional<GitHubServiceError>) {
-    if (error is Optional.Some) {
-        Toast.makeText(this, error.data.displayMessage, Toast.LENGTH_SHORT).show()
+private fun GithubPaginatedSearchActivity.showOrHideError(error: GitHubServiceError?) {
+    error?.let {
+        Toast.makeText(this, it.displayMessage, Toast.LENGTH_SHORT).show()
     }
 }
 
-private fun GithubPaginatedSearchActivity.showQuery(text: Optional<String>) =
-        if (text is Optional.Some) {
-            Toast.makeText(this, "Query: ${text.data}", Toast.LENGTH_SHORT).show()
-        } else {
+private fun GithubPaginatedSearchActivity.showQuery(text: String?) =
+        text?.let {
+            Toast.makeText(this, "Query: ${it}", Toast.LENGTH_SHORT).show()
             // do nothing
         }
 

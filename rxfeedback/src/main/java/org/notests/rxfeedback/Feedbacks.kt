@@ -5,7 +5,6 @@ package org.notests.rxfeedback
 import io.reactivex.Emitter
 import io.reactivex.Observable
 import io.reactivex.Scheduler
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.subjects.BehaviorSubject
 import org.notests.sharedsequence.*
@@ -14,10 +13,10 @@ import org.notests.sharedsequence.*
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
  *
- * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * When query returns some value, that value is being passed into `effects` lambda to decide which effects should be performed.
  * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
  *
- * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ * When `query` returns null, feedback loops doesn't perform any effect.
  *
  * @param query Part of state that controls feedback loop.
  * @param areEqual Part of state that controls feedback loop.
@@ -25,15 +24,12 @@ import org.notests.sharedsequence.*
  * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> react(
-        query: (State) -> Optional<Query>,
+        query: (State) -> Query?,
         areEqual: (Query, Query) -> Boolean,
         effects: (Query) -> Observable<Event>
 ): (ObservableSchedulerContext<State>) -> Observable<Event> = react(
         queries = { state: State ->
-            when (val result = query(state)) {
-                is Optional.Some -> mapOf(ConstHashable(result.data, areEqual) to result.data)
-                is Optional.None -> mapOf()
-            }
+            query(state)?.let { mapOf(ConstHashable(it, areEqual) to it) } ?: mapOf()
         },
         effects = { initial: Query, _ ->
             effects(initial)
@@ -45,17 +41,17 @@ fun <State, Query, Event> react(
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
  *
- * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * When query returns some value, that value is being passed into `effects` lambda to decide which effects should be performed.
  * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
  *
- * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ * When `query` returns null, feedback loops doesn't perform any effect.
  *
  * @param query Part of state that controls feedback loop.
  * @param effects Chooses which effects to perform for certain query result.
  * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> react(
-        query: (State) -> Optional<Query>,
+        query: (State) -> Query?,
         effects: (Query) -> Observable<Event>
 ): (ObservableSchedulerContext<State>) -> Observable<Event> =
         react(query, { lhs, rhs -> lhs == rhs }, effects)
@@ -65,10 +61,10 @@ fun <State, Query, Event> react(
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
  *
- * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * When query returns some value, that value is being passed into `effects` lambda to decide which effects should be performed.
  * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
  *
- * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ * When `query` returns null, feedback loops doesn't perform any effect.
  *
  * @param query Part of state that controls feedback loop.
  * @param areEqual Part of state that controls feedback loop.
@@ -76,7 +72,7 @@ fun <State, Query, Event> react(
  * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> reactSafe(
-        query: (State) -> Optional<Query>,
+        query: (State) -> Query?,
         areEqual: (Query, Query) -> Boolean,
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
@@ -94,17 +90,17 @@ fun <State, Query, Event> reactSafe(
  * State: State type of the system.
  * Query: Subset of state used to control the feedback loop.
  *
- * When query returns [some value][Optional.Some], that value is being passed into `effects` lambda to decide which effects should be performed.
+ * When query returns some value, that value is being passed into `effects` lambda to decide which effects should be performed.
  * In case new `query` is different from the previous one, new effects are calculated by using `effects` lambda and then performed.
  *
- * When `query` returns [Optional.None], feedback loops doesn't perform any effect.
+ * When `query` returns null, feedback loops doesn't perform any effect.
  *
  * @param query Part of state that controls feedback loop.
  * @param effects Chooses which effects to perform for certain query result.
  * @return Feedback loop performing the effects.
  */
 fun <State, Query, Event> reactSafe(
-        query: (State) -> Optional<Query>,
+        query: (State) -> Query?,
         effects: (Query) -> Signal<Event>
 ): (Driver<State>) -> Signal<Event> =
         reactSafe(query, { lhs, rhs -> lhs == rhs }, effects)

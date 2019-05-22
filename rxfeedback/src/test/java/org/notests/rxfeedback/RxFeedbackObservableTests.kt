@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
  */
 class RxFeedbackObservableTests {
 
-    var scheduler = TestScheduler()
+    private val scheduler = TestScheduler()
 
     @Test
     fun testInitial() {
@@ -213,7 +213,7 @@ class RxFeedbackObservableTests {
         val states = mutableListOf<Int>()
         val res = scheduler.start {
             val producer = react<Int, Int, Int>(
-                    query = { Optional.Some(0) },
+                    query = { 0 },
                     effects = {
                         Observable.fromArray(1, 1, 1)
                     })
