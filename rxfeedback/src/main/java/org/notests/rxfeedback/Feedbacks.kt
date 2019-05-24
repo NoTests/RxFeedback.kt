@@ -207,9 +207,9 @@ private class QueryLifetimeTracking<Query, QueryID, Event>(
      * @param queries used to activate, deactivate, update effects.
      */
     fun forwardQueries(queries: Map<QueryID, Query>) {
-        this.state.async { state ->
+        this.state.enqueueOrExecuteAll { state ->
             if (state.isDisposed) {
-                return@async
+                return@enqueueOrExecuteAll
             }
             val lifetimeToUnsubscribeByIdentifier = state.lifetimeByIdentifier.toMutableMap()
             for ((queryID, query) in queries) {
@@ -230,13 +230,13 @@ private class QueryLifetimeTracking<Query, QueryID, Event>(
                     val queriesSubscription = this.effects(query, latestQuerySubject)
                             .observeOn(this.scheduler)
                             .subscribe({ event: Event ->
-                                this.state.async {
+                                this.state.enqueueOrExecuteAll {
                                     if (valid(it)) {
                                         emitter.onNext(event)
                                     }
                                 }
                             }, { throwable: Throwable ->
-                                this.state.async {
+                                this.state.enqueueOrExecuteAll {
                                     if (valid(it)) {
                                         emitter.onError(throwable)
                                     }
@@ -260,7 +260,7 @@ private class QueryLifetimeTracking<Query, QueryID, Event>(
     }
 
     fun dispose() {
-        this.state.async { state ->
+        this.state.enqueueOrExecuteAll { state ->
             state.lifetimeByIdentifier.values.forEach { it.subscription.dispose() }
             state.lifetimeByIdentifier = mutableMapOf()
             state.isDisposed = true

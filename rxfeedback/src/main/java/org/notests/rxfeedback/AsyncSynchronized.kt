@@ -6,7 +6,7 @@ internal class AsyncSynchronized<State>(private val state: State) {
 
     private val queue = mutableListOf<Mutate<State>>()
 
-    fun async(mutate: (State) -> Unit) {
+    fun enqueueOrExecuteAll(mutate: (State) -> Unit) {
         var executeMutation = enqueue(mutate) ?: return
         do {
             executeMutation(state)
