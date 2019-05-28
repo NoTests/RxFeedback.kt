@@ -4,23 +4,19 @@ package org.notests.rxfeedback
  * Created by juraj on 13/11/2017.
  */
 
-val String.needsToAppendDot: Optional<Unit>
+val String.needsToAppendDot: Unit?
     get() =
         if (this == "initial" || this == "initial_." || this == "initial_._.") {
-            Optional.Some(Unit)
-        } else Optional.None()
 
-val String.needsToAppend: Optional<String>
-    get() =
-        if (this == "initial") {
-            Optional.Some("_a")
-        } else if (this == "initial_a") {
-            Optional.Some("_b")
-        } else if (this == "initial_a_b") {
-            Optional.Some("_c")
-        } else {
-            Optional.None<String>()
-        }
+        } else null
+
+val String.needsToAppend: String?
+    get() = when {
+        this == "initial" -> "_a"
+        this == "initial_a" -> "_b"
+        this == "initial_a_b" -> "_c"
+        else -> null
+    }
 
 val String.needsToAppendParallel: Set<String>
     get() =

@@ -99,8 +99,8 @@ val State.machineStateOfMind: String
         State.MachineHasIt -> "I have the 🏈"
     }
 
-val State.machinePitching: Optional<Unit>
-    get() = if (this == State.MachineHasIt) Optional.Some(Unit) else Optional.None()
+val State.machinePitching: Unit?
+    get() = if (this == State.MachineHasIt) Unit else null
 
 var View.isHidden: Boolean
     set(value) {
